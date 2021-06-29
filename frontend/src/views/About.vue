@@ -19,8 +19,11 @@
 </template>
 
 <style lang="scss" scoped>
-h1 {
+h1,
+h2,
+p {
   color:rgb(72, 72, 228);
 }
+
 
 </style>
