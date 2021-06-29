@@ -23,24 +23,19 @@
 </template>
 
 <script>
-
-
 export default {
-
-      computed:{
-          isLoggedIn(){
-              return window.localStorage.getItem("token");
-          }  
+  computed: {
+    isLoggedIn() {
+      return window.localStorage.getItem("token");
     },
-    methods:{
-        logout(){
-            window.localStorage.clear();
-            window.location.href="/";
-        }
-        
-    }
-  
-}
+  },
+  methods: {
+    logout() {
+      window.localStorage.clear();
+      window.location.href = "/";
+    },
+  },
+};
 </script>
 
 <style lang='scss'>

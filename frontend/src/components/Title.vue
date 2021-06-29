@@ -1,16 +1,16 @@
 <template>
   <div class="hello">
     <h1>{{ msg }}</h1>
-</div>
+  </div>
 </template>
 
 <script>
 export default {
-  name: 'Title',
+  name: "Title",
   props: {
-    msg: String
-  }
-}
+    msg: String,
+  },
+};
 </script>
 
 <style scoped lang="scss">

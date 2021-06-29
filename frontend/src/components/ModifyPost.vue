@@ -1,66 +1,74 @@
 <template>
   <div class="bloc-modale" v-if="revele">
-
     <div class="modale card">
       <div v-on:click="toggleModale" class="btn-modale btn btn-danger">X</div>
       <h2>Modifie ton histoire</h2>
       <form>
-       <div>
-        <input v-model="message" class="input-text" id="message" type="textarea" />
-          <br/>
-          <br/>
+        <div>
+          <input
+            v-model="message"
+            class="input-text"
+            id="message"
+            type="textarea"
+          />
+          <br />
+          <br />
           <label for="message">Mettez nous votre lien:</label>
           <br />
           <input v-model="link" class="input-link" id="message" type="text" />
-          <button type="submit" class="btn btn-primary"  @click.prevent="modifyPost(postId)"  > Poster </button>
-
-       </div>
+          <button
+            type="submit"
+            class="btn btn-primary"
+            @click.prevent="modifyPost(postId)"
+          >
+            Poster
+          </button>
+        </div>
       </form>
     </div>
   </div>
 </template>
 
 <script>
-import axios from 'axios';
+import axios from "axios";
 export default {
   name: "Modale",
-  props: ["revele", "toggleModale","postId"],
-  data(){
-      return{
-         message: null,
-        link: null,
-        file:""
-      }
+  props: ["revele", "toggleModale", "postId"],
+  data() {
+    return {
+      message: null,
+      link: null,
+      file: "",
+    };
   },
- 
- methods:{
-      modifyPost(n) {
+
+  methods: {
+    modifyPost(n) {
       const FD = new FormData();
-      console.log('n',n);
+      console.log("n", n);
       FD.append("message", this.message);
       if (this.link !== null) {
         FD.append("link", this.link);
       }
-      
-      
-      FD.append("userId",localStorage.getItem('userId'));
-              const body=Object.fromEntries(FD.entries());
 
-        const postData = JSON.stringify(body);
-        console.log(postData)
-      axios.put("http://localhost:3000/api/posts/"+n,postData,{ headers: {'Content-type' : 'application/json',"Authorization":"Bearer " + localStorage.getItem("token")}})
-        .then(response=>{
-          console.log(response);
-         window.location.reload();
+      FD.append("userId", localStorage.getItem("userId"));
+      const body = Object.fromEntries(FD.entries());
 
+      const postData = JSON.stringify(body);
+      console.log(postData);
+      axios
+        .put("http://localhost:3000/api/posts/" + n, postData, {
+          headers: {
+            "Content-type": "application/json",
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
         })
-
-     
-     
-     
-    }
- }
-
+        .then((response) => {
+          console.log(response);
+          window.location.reload();
+        });
+    },
+  },
 };
 </script>
 <style scoped>
@@ -74,7 +82,6 @@ export default {
   justify-content: center;
   align-items: center;
 }
-
 
 .modale {
   background: #f1f1f1;

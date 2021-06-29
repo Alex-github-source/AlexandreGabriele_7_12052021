@@ -1,16 +1,15 @@
 <template>
   <div id="app">
-    <Header/>
-       <router-view/>
-
-  </div> 
+    <Header />
+    <router-view />
+  </div>
 </template>
 <script>
-import Header from '@/components/Header.vue'
+import Header from "@/components/Header.vue";
 
 export default {
   components: {
-    Header
+    Header,
   },
 };
 </script>
@@ -23,7 +22,7 @@ export default {
   text-align: center;
   color: #2c3e50;
 }
-.logo{
+.logo {
   width: 50px;
 }
 
@@ -33,8 +32,6 @@ export default {
   a {
     font-weight: bold;
     color: #2c3e50;
-
-   
   }
 }
 </style>

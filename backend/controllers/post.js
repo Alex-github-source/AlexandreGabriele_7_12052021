@@ -1,98 +1,99 @@
-const db=require('../models');
+const db = require('../models');
 const fs = require("fs");
 const { post } = require('../routes/user');
 
 
-exports.createPost =  async (req, res ) => {
-    
-         const {userId,message}=req.body
-    try {
-        
+exports.createPost = async (req, res) => {
 
-        const user=await db.User.findOne({
+    const { userId, message } = req.body
+    try {
+
+
+        const user = await db.User.findOne({
             attributes: ["pseudo", "id"],
-            where: { id: userId }})
-        if(user !==null){
+            where: { id: userId }
+        })
+        if (user !== null) {
             if (req.file) {
-                const  imageUrl = `${req.protocol}://${req.get("host")}/images/${
-                  req.file.filename
-                }`;
-             
-        const post = await db.Post.create({ 
+                const imageUrl = `${req.protocol}://${req.get("host")}/images/${req.file.filename
+                    }`;
+
+                const post = await db.Post.create({
+                    include: [
+                        {
+                            model: db.User,
+                            attributes: ["id"],
+                        },
+                    ],
+                    message,
+                    UserId: user.id,
+                    link: req.body.link,
+                    imageUrl: imageUrl
+                });
+                res.status(201).json({ postLink: post.link, post: post, postId: post.id, message: "Post ajouté ! " });
+            } else {
+                db.Post
+                    .create({
+                        UserId: user.id,
+                        message: message,
+                        link: req.body.link,
+                        imageUrl: null,
+                    })
+                    .then((post) => res.status(201).json({ post: post, postLink: post.link, postId: post.id, message: "Post  ajouté !" }))
+                    .catch((error) => res.status(400).json({ error }));
+            }
+        }
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json(error)
+    }
+};
+
+exports.getPosts = async (req, res) => {
+    try {
+        const posts = await db.Post.findAll({
+            attributes: ["id", "message", "imageUrl", "createdAt"],
+            order: [["createdAt", "DESC"]],
             include: [
                 {
-                  model: db.User,
-                  attributes: [ "id"],
+                    model: db.User,
+                    attributes: ["pseudo", "id"],
+
                 },
-              ],
-              message,
-             UserId:user.id, 
-             link:req.body.link,
-             imageUrl: imageUrl
-            });
-                res.status(201).json({ postLink:post.link,post:post,postId:post.id, message:"Post ajouté ! " });
-        }else{
-            db.Post
-            .create({
-                UserId : user.id,
-                message: message,
-                link:req.body.link,
-                imageUrl : null,
-            })
-            .then((post) => res.status(201).json({ post:post,postLink:post.link,postId:post.id, message: "Post  ajouté !" }))
-            .catch((error) => res.status(400).json({ error }));
-        }  
-    }      
-} catch (error) {
-    console.log(error)
-    return res.status(500).json(error)
-}
-};
-
-exports.getPosts = async (req,res) =>{
-try {
-    const posts = await db.Post.findAll({
-        attributes: ["id", "message", "imageUrl", "createdAt"],
-        order: [["createdAt", "DESC"]],
-        include:[
-            {
-                model:db.User,
-                attributes: ["pseudo", "id"],
-
-            },
-            {
-                model:db.Comment,
-                attributes: ["message", "pseudo", "UserId", "id"],
-                order:[["createdAt","DESC"]],
-                include: [
-                    {
-                        model: db.User,
-                        attributes: [ "pseudo"],
-                    },
-                ],
-            }]
+                {
+                    model: db.Comment,
+                    attributes: ["message", "pseudo", "UserId", "id"],
+                    order: [["createdAt", "DESC"]],
+                    include: [
+                        {
+                            model: db.User,
+                            attributes: ["pseudo"],
+                        },
+                    ],
+                }]
         })
-    return res.json(posts)
-} catch (error) {
-    console.log(error)
-    res.status(500).json(error)
-}       
+        return res.json(posts)
+    } catch (error) {
+        console.log(error)
+        res.status(500).json(error)
+    }
 };
-exports.getPost = async (req,res) =>{
+exports.getPost = async (req, res) => {
     try {
         const post = await db.Post.findOne({
-            where:{ id:req.params.id },
-            include:[db.User]})
+            where: { id: req.params.id },
+            include: [db.User]
+        })
         return res.json(post)
     } catch (error) {
         console.log(error)
         res.status(500).json(error)
-    }       
-    };
-exports.updatePost = async (req,res) =>{
-        try {
+    }
+};
+exports.updatePost = async (req, res) => {
+    try {
 
-            db.Post.findOne({ where: { id: req.params.id } })
+        db.Post.findOne({ where: { id: req.params.id } })
             .then((post) => {
                 post.update({
                     where: {
@@ -104,30 +105,30 @@ exports.updatePost = async (req,res) =>{
                     .then(() => res.status(200).json({ message: 'Le message a bien été modifiée !' }))
                     .catch(error => res.status(400).json({ error: "Une erreur est survenue dans la modification du message" }));
             });
-        } catch (error) {
-            console.log(error)
-            res.status(500).json(error)
-        }       
-        };
-        exports.deletePost = async (req, res) => {
-            try {
-              const id = req.params.id;
-              const post = await db.Post.findOne({ where: { id: id } });
-              if (post.imageUrl) {
-                const filename = post.imageUrl.split("/images")[1];
-                fs.unlink(`images/${filename}`, () => {
+    } catch (error) {
+        console.log(error)
+        res.status(500).json(error)
+    }
+};
+exports.deletePost = async (req, res) => {
+    try {
+        const id = req.params.id;
+        const post = await db.Post.findOne({ where: { id: id } });
+        if (post.imageUrl) {
+            const filename = post.imageUrl.split("/images")[1];
+            fs.unlink(`images/${filename}`, () => {
                 db.Post.destroy({ where: { id: id } }); // on supprime le post
                 res.status(200).json({ messageRetour: "Post supprimé" });
-            });} else {
-                db.Post.destroy({ where: { id: post.id } }, { truncate: true });
-                res.status(200).json({ message: "Post supprimé" });
-              }
-              
-            } catch (error) {
-              return res.status(500).send({ error: "Erreur serveur" });
-            }
-          }
-        
-    
-    
-     
+            });
+        } else {
+            db.Post.destroy({ where: { id: post.id } }, { truncate: true });
+            res.status(200).json({ message: "Post supprimé" });
+        }
+
+    } catch (error) {
+        return res.status(500).send({ error: "Erreur serveur" });
+    }
+}
+
+
+
