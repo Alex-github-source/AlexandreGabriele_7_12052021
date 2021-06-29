@@ -17,7 +17,9 @@
              
           <input @change="uploadImage" type="file" aria-label="image input" accept="image/png, image/jpeg,image/bmp, image/gif" ref="file" name="image"/>
           </div>
-
+  <div v-if="picture" class="create-post__picture">
+			<el-image :src="picture"></el-image>
+		</div>
         
 
         
@@ -38,6 +40,7 @@ export default {
         message: "",
         link: null,
         file:"",
+        picture:'',
     
       msgError: ""
     };
@@ -46,11 +49,10 @@ export default {
   },
   methods: {
       uploadImage(){
-         const file = this.$refs.file.files[0];
-      this.file = file;
-            },
-            
+                 this.file = this.$refs.file.files[0]
 
+           
+      },
 
 
     
@@ -60,19 +62,16 @@ export default {
       if (this.link !== null) {
         FD.append("link", this.link);
       }
-      if (this.link !== null) {
-      FD.append("image",this.file)
+      if (this.file !== null) {
+      FD.append("image",this.file,this.file.name)
       }
       FD.append("userId",localStorage.getItem('userId'));
-            const body=Object.fromEntries(FD.entries());
-        const postData = JSON.stringify(body);
-        console.log(postData)
+         
 
-
-      axios.post("http://localhost:3000/api/posts/create",postData,{ headers: {'Content-type' : 'application/json',"Authorization":"Bearer " + localStorage.getItem("token")}})
+      axios.post("http://localhost:3000/api/posts/create",FD,{ headers: {'Content-type' : 'mutlipart/form-data',"Authorization":"Bearer " + localStorage.getItem("token")}})
         .then(response=>{
           console.log(response);
-         // window.location.reload();
+          window.location.reload();
 
         })
 

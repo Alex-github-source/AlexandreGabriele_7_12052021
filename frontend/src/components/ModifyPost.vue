@@ -51,7 +51,7 @@ export default {
       axios.put("http://localhost:3000/api/posts/"+n,postData,{ headers: {'Content-type' : 'application/json',"Authorization":"Bearer " + localStorage.getItem("token")}})
         .then(response=>{
           console.log(response);
-         // window.location.reload();
+         window.location.reload();
 
         })
 

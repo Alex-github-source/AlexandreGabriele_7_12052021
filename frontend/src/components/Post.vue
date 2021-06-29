@@ -18,10 +18,14 @@
       </div>
     </div>
     <div class="card-body">
+      <div class="bloc-content">
         <div class="card-text" v-if="post.message!=='null'">
-          <p class="mb-0">{{post.message}}</p>
+          <p class="mb-0 message">{{post.message}}</p>
           <p  class="mb-0">{{post.link}}</p>
-          <img v-if="post.imageUrl" :src="post.imageUrl" alt="image postée" :max-height="600" :max-width="400"/>
+        </div>
+        <div>
+          <img v-if="post.imageUrl" :src="post.imageUrl" alt="image postée" :max-height="100" :max-width="100"/>
+        </div>
         </div>
         <div class="block-comment">
           <div>
@@ -136,6 +140,12 @@ export default {
 </script>
 
 <style scoped>
+.message{
+  font-size: 1.3rem;
+}
+img{
+ width:200px;
+}
 .comment-content {
         text-align: center;
         width: 450px;
@@ -169,5 +179,9 @@ export default {
     }
     .name {
         font-size: 1.2rem;
+    }
+    .bloc-content{
+      display:flex;
+      justify-content:space-around;
     }
 </style>

@@ -13,12 +13,10 @@ exports.createPost =  async (req, res ) => {
             where: { id: userId }})
         if(user !==null){
             if (req.file) {
-                 imageUrl = `${req.protocol}://${req.get("host")}/images/${
+                const  imageUrl = `${req.protocol}://${req.get("host")}/images/${
                   req.file.filename
                 }`;
-              } else {
-                imageUrl = null;
-              }
+             
         const post = await db.Post.create({ 
             include: [
                 {
@@ -29,12 +27,21 @@ exports.createPost =  async (req, res ) => {
               message,
              UserId:user.id, 
              link:req.body.link,
-             imageUrl:imageUrl
+             imageUrl: imageUrl
             });
                 res.status(201).json({ post:post,postId:post.id, message:"Post ajouté ! " });
         }else{
-            res.status(400).send({ error:"erreur serveur" });
-        }
+            db.Post
+            .create({
+                UserId : user.id,
+                message: message,
+                link:req.body.link,
+                imageUrl : null,
+            })
+            .then((response) => res.status(201).json({ message: "Post créé !", post: response }))
+            .catch((error) => res.status(400).json({ error }));
+        }  
+    }      
 } catch (error) {
     console.log(error)
     return res.status(500).json(error)
