@@ -28,7 +28,8 @@ export default {
   data(){
       return{
          message: null,
-        link: null
+        link: null,
+        file:""
       }
   },
  
@@ -40,11 +41,14 @@ export default {
       if (this.link !== null) {
         FD.append("link", this.link);
       }
+      
+        FD.append("image", this.file);
+      
       FD.append("userId",localStorage.getItem('userId'));
               const body=Object.fromEntries(FD.entries());
 
         const postData = JSON.stringify(body);
-
+        console.log(postData)
       axios.put("http://localhost:3000/api/posts/"+n,postData,{ headers: {'Content-type' : 'application/json',"Authorization":"Bearer " + localStorage.getItem("token")}})
         .then(response=>{
           console.log(response);

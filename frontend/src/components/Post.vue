@@ -11,16 +11,17 @@
             class=" btn btn-primary"
             v-on:click="toggleModale"
           
-          >Modifier</div>
+          >Modifier le post</div>
           <div class="btn  btn-danger"
             v-on:click="deletePost(postId)"
-          >Supprimer</div>
+          >Supprimer le post</div>
       </div>
     </div>
     <div class="card-body">
         <div class="card-text" v-if="post.message!=='null'">
           <p class="mb-0">{{post.message}}</p>
-          <p v-on:click="linkurl()" class="mb-0">{{post.link}}</p>
+          <p  class="mb-0">{{post.link}}</p>
+          <img v-if="post.imageUrl" :src="post.imageUrl" alt="image postée" :max-height="600" :max-width="400"/>
         </div>
         <div class="block-comment">
           <div>
@@ -31,7 +32,7 @@
               <p class="name">{{ comment.User.pseudo }}:</p>
               <p class="comment-content">{{ comment.message }}</p>
             </div>
-            <div class="delete btn btn-danger" v-on:click="deleteComment(postId, comment.id, user.id, comment.UserId)">
+            <div v-if="userId==comment.UserId" class="delete btn btn-danger" v-on:click="deleteComment(postId, comment.id, user.id, comment.UserId)">
                Supprimer le commentaire
             </div>
           </div>
@@ -89,10 +90,7 @@ export default {
    
   },
    methods: {
-linkurl(){
-      
 
-},
      toggleModale(){
        this.revele = !this.revele
      },

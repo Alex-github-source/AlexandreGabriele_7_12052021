@@ -18,6 +18,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(helmet());
 app.use(cors());
+app.use('/upload', express.static(path.join(__dirname, 'upload')));
+
 
 app.use("/api/users",userRoutes);
 app.use('/api/posts', postsRoutes);

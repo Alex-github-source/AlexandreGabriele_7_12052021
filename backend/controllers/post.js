@@ -1,9 +1,11 @@
 const db=require('../models');
+const fs = require("fs");
 
 
 exports.createPost =  async (req, res ) => {
     
          const {userId,message}=req.body
+         let imageUrl;
     try {
         
 
@@ -11,6 +13,13 @@ exports.createPost =  async (req, res ) => {
             attributes: ["pseudo", "id"],
             where: { id: userId }})
         if(user !==null){
+            if (req.file) {
+                imageUrl = `${req.protocol}://${req.get("host")}/upload/${
+                  req.file.filename
+                }`;
+              } else {
+                imageUrl = null;
+              }
         const post = await db.Post.create({ 
             include: [
                 {
@@ -20,7 +29,8 @@ exports.createPost =  async (req, res ) => {
               ],
               message,
              UserId:user.id, 
-             link:req.body.link
+             link:req.body.link,
+             imageUrl:imageUrl
             });
                 res.status(201).json({ post:post,postId:post.id, message:"Post ajouté ! " });
         }else{
@@ -35,7 +45,7 @@ exports.createPost =  async (req, res ) => {
 exports.getPosts = async (req,res) =>{
 try {
     const posts = await db.Post.findAll({
-        attributes: ["id", "message", "link", "createdAt"],
+        attributes: ["id", "message", "imageUrl", "createdAt"],
         order: [["createdAt", "DESC"]],
         include:[
             {
@@ -74,23 +84,42 @@ exports.getPost = async (req,res) =>{
     };
 exports.updatePost = async (req,res) =>{
         try {
+            let newImageUrl;
+
             const post = await db.Post.findOne({
                 where:{ id:req.params.id },
                 include:[db.User]})
+
                 if(post.id){
+                    if (req.file) {
+                        newImageUrl = `${req.protocol}://${req.get("host")}/upload/${
+                          req.file.filename
+                        }`;
+                        if (post.imageUrl) {
+                          const filename = post.imageUrl.split("/upload")[1];
+                          fs.unlink(`upload/${filename}`, (err) => {
+                            if (err) console.log(err);
+                            else {
+                              console.log(`Deleted file: upload/${filename}`);
+                            }
+                          });
+                        }
                     if(req.body.message){
                         post.message=req.body.message
                     }
                     if(req.body.link){
                         post.link=req.body.link
                     }
-                    const newPost= await post.save({fields:["message","link"]});
+                    if(req.body.imageUrl){
+                    post.imageUrl=newImageUrl;
+                    }
+                    const newPost= await post.save({fields:["message","link","imageUrl"]});
                     res.status(200).json({
                         post:newPost,
                         messageRetour:"Votre post a été mis à jour",
                     })
                 }
-
+                }
         } catch (error) {
             console.log(error)
             res.status(500).json(error)
@@ -100,13 +129,21 @@ exports.updatePost = async (req,res) =>{
             try {
               const id = req.params.id;
               const post = await db.Post.findOne({ where: { id: id } });
-             
+              if (post.imageUrl) {
+                const filename = post.imageUrl.split("/upload")[1];
+                fs.unlink(`upload/${filename}`, () => {
                 db.Post.destroy({ where: { id: id } }); // on supprime le post
                 res.status(200).json({ messageRetour: "Post supprimé" });
+            });} else {
+                db.Post.destroy({ where: { id: post.id } }, { truncate: true });
+                res.status(200).json({ message: "Post supprimé" });
+              }
               
             } catch (error) {
               return res.status(500).send({ error: "Erreur serveur" });
             }
-          };
+          }
+        
+    
     
      

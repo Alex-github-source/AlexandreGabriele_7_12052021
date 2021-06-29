@@ -1,7 +1,7 @@
 <template>
      <div id="wall" class="wall">
         <CreatePost />
-             <Post v-for="post in allPosts" v-bind:key="post.id" :post="post" @infosPost="setInfos" />
+             <Post v-for="post in allPosts" v-bind:key="post.id" :post="post" :postImage="post.imageUrl" @infosPost="setInfos" />
      </div>
 </template>
 <script>

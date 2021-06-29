@@ -1,6 +1,5 @@
 const router = require("express").Router();
 const userCtrl = require("../controllers/user");
-const auth = require("../middleware/auth");
 const {body,validationResult} = require('express-validator');
 
 const sanitize = (req, res, next) => {            //on desinfecte les champs du formulaire
