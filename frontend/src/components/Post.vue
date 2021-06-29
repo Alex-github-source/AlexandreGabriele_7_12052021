@@ -17,16 +17,16 @@
           >Supprimer le post</div>
       </div>
     </div>
-    <div class="card-body">
-      <div class="bloc-content">
-        <div class="card-text" v-if="post.message!=='null'">
-          <p class="mb-0 message">{{post.message}}</p>
-          <p  class="mb-0">{{post.link}}</p>
-        </div>
-        <div>
+    <div class="card-img-top">
           <img v-if="post.imageUrl" :src="post.imageUrl" alt="image postée" :max-height="100" :max-width="100"/>
         </div>
+    <div class="card-body">
+        <div class="card-text" v-if="post.message!=='null'">
+          <p class="mb-0 message">{{post.message}}</p>
+          <a :href="'http://'+postLink" class="mb-0">{{postLink}}</a>
         </div>
+        
+        
         <div class="block-comment">
           <div>
             <h3>Commentaires: </h3>
@@ -67,6 +67,7 @@ export default {
       revele:false,
       isAdmin:localStorage.getItem('isAdmin'),  
       userId:localStorage.getItem('userId') ,
+      postLink:""
 
     };
   },
@@ -75,7 +76,7 @@ export default {
         let self        = this;
         axios.get("http://localhost:3000/api/posts/" + id, { headers: {"Authorization": "Bearer " + localStorage.getItem("token")} })
         .then(res => {  
-          
+            self.postLink=res.data.link
             self.postId= res.data.id     
         })
         .catch((error)=> { console.log(error) 
@@ -180,8 +181,5 @@ img{
     .name {
         font-size: 1.2rem;
     }
-    .bloc-content{
-      display:flex;
-      justify-content:space-around;
-    }
+    
 </style>

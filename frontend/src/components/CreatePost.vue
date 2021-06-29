@@ -38,7 +38,7 @@ export default {
   data() {
     return {
         message: "",
-        link: null,
+        link: "",
         file:"",
         picture:'',
     
@@ -63,7 +63,7 @@ export default {
         FD.append("link", this.link);
       }
       if (this.file !== null) {
-      FD.append("image",this.file,this.file.name)
+      FD.append("image",this.file)
       }
       FD.append("userId",localStorage.getItem('userId'));
          
@@ -71,7 +71,7 @@ export default {
       axios.post("http://localhost:3000/api/posts/create",FD,{ headers: {'Content-type' : 'mutlipart/form-data',"Authorization":"Bearer " + localStorage.getItem("token")}})
         .then(response=>{
           console.log(response);
-          window.location.reload();
+         // window.location.reload();
 
         })
 

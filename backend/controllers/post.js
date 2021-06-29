@@ -1,5 +1,6 @@
 const db=require('../models');
 const fs = require("fs");
+const { post } = require('../routes/user');
 
 
 exports.createPost =  async (req, res ) => {
@@ -29,7 +30,7 @@ exports.createPost =  async (req, res ) => {
              link:req.body.link,
              imageUrl: imageUrl
             });
-                res.status(201).json({ post:post,postId:post.id, message:"Post ajouté ! " });
+                res.status(201).json({ postLink:post.link,post:post,postId:post.id, message:"Post ajouté ! " });
         }else{
             db.Post
             .create({
@@ -38,7 +39,7 @@ exports.createPost =  async (req, res ) => {
                 link:req.body.link,
                 imageUrl : null,
             })
-            .then((response) => res.status(201).json({ message: "Post créé !", post: response }))
+            .then((post) => res.status(201).json({ post:post,postLink:post.link,postId:post.id, message: "Post  ajouté !" }))
             .catch((error) => res.status(400).json({ error }));
         }  
     }      
