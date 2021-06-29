@@ -18,11 +18,19 @@
                             <div class="card-body text-center">
                                 <div class="dropdown text-center">
                                     <p>Membre depuis le {{ creation }}</p>
+                                    <p>Ton email de connexion: {{ email }}</p>
                                 </div>
                             </div>
-                          
-                            <div class="card-body mx-auto">
-                                <div class="btn-danger rounded p-3" style="cursor:default"><button @click="deleteMyAccount(id)" class="rounded p-2"><span class="m-3 font-weight-bold">SUPPRIMER VOTRE COMPTE</span></button></div>
+                          <div >
+                            <modale :userId=userId  v-bind:revele="revele" v-bind:toggleModale="toggleModale"></modale>
+                            <div
+                            class=" btn btn-primary"
+                            v-on:click="toggleModale"
+          
+                            >Modifier le profile</div>
+                            <div class="btn  btn-danger"
+                            v-on:click="deleteMyAccount(userId)"
+                            >Supprimer le compte</div>
                             </div>
                         </div> 
                     </div>  
@@ -35,17 +43,24 @@
 
 <script>
 import axios from "axios";
+import ModaleUser from "../components/ModifyProfile";
+import { mapState } from "vuex";
+
+
 export default {
     name: "Profile",
     components: {
-      
+      'modale':ModaleUser
     },
     data() {
         return {
             isAdmin: false,
+            revele:false,
             nameCurrentUser: "",
             creation: "",
-            id: ""
+            id: "",
+            email:'',
+            userId:localStorage.getItem('userId')
         }
     },
     created: function() {        
@@ -56,18 +71,26 @@ export default {
             self.creation           = res.data.createdAt.slice(0,10).split("-").reverse().join(".");
             self.isAdmin            = res.data.isAdmin;
             self.nameCurrentUser    = res.data.pseudo.charAt(0).toUpperCase() + res.data.pseudo.slice(1);
-            self.id                 = res.data.id     
+            self.id                 = res.data.id;
+            self.email              = res.data.email;     
         })
         .catch((error)=> { console.log(error) 
         });    
     },
+    computed:{
+   ...mapState(["user"])
+
+    },
     methods: {
-      
+     
+      toggleModale(){
+       this.revele = !this.revele
+     },
         deleteMyAccount(n) {
-            let id = n;
+              n=this.userId;
             let confirmUserDeletion = confirm("voulez-vous vraiment supprimer votre compte ?");
             if (confirmUserDeletion == true) {
-                axios.delete("http://localhost:3000/api/users/" + id, {headers: { "Authorization": "Bearer " + localStorage.getItem("token") },})
+                axios.delete("http://localhost:3000/api/users/" + n, {headers: { "Authorization": "Bearer " + localStorage.getItem("token") },})
                 .then((res)=> {
                     console.log(res);
                     alert('Cliquez sur ok et l\'utilisateur sera supprimé');

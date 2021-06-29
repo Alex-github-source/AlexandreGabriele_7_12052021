@@ -2,6 +2,7 @@ const bcrypt = require("bcrypt"); // chiffrement du password
 const db = require("../models"); // mdèles de la bdd
 const { Op } = require("sequelize");
 const jwtUtils = require('../utils/jwtutils');
+const token = require("../middleware/token");
  //module pour l'authentificatiion
 
 
@@ -93,31 +94,27 @@ exports.getAllUsers = async (req, res) => {
     return res.status(500).send({ error: "Erreur serveur" });
   }
 };
-exports.updateUserProfile = async (req, res) => {
+exports.updateUserProfile  =(req, res) => {
   // modifier le profil
-  const headerAuth=req.headers['authorization'];
-  const userId=jwtUtils.getUserId(headerAuth)
+
     try {
-        const user = await db.User.findOne({
-            attributes:['id','pseudo','email','password'],
-            where: { id: userId },
-          });
-          if(user.id){
-              if(req.body.pseudo){
-                  user.pseudo=req.body.pseudo;
-              }
-              if(req.body.email){
-                  user.email=req.body.email;
-              }
-              if(req.body.password){
-                  user.password=req.body.password;
-              }
-              const newUser= await user.save({fields:["pseudo","email","password"]});
-              res.status(200).json({
-                  user:newUser,
-                  messageRetour:"Votre profil a été mis à jour",
-              })
-          }
+     const id=req.params.id;
+      db.User.findOne({where:{id:id}})
+     .then(user=>{
+       userModif={
+         pseudo:req.body.pseudo,
+         email:req.body.email
+       }
+    
+     db.User.update(
+       userModif,{
+         where :{id:id}
+       }
+     )
+      })
+      .then(()=>res.status(201).json({messae:"Compte modifié"}))
+      .catch(error => res.status(400).json({ error }))
+
     } catch (error) {
         return res.status(500).send({ error: "Erreur serveur" });
     }

@@ -14,6 +14,7 @@
           <input type="text" v-model="link" class="upload" id="link" name="link"  />
             
              <label for="image" class="pr-3">Image</label>
+             
           <input @change="uploadImage" type="file" aria-label="image input" accept="image/png, image/jpeg,image/bmp, image/gif" ref="file" name="image"/>
           </div>
 
@@ -44,18 +45,24 @@ export default {
   computed: {
   },
   methods: {
-     uploadImage() {
-      const file = this.$refs.file.files[0];
+      uploadImage(){
+         const file = this.$refs.file.files[0];
       this.file = file;
+            },
+            
 
-    },
+
+
+    
     submitForm() {
       const FD = new FormData();
       FD.append("message", this.message);
       if (this.link !== null) {
         FD.append("link", this.link);
       }
+      if (this.link !== null) {
       FD.append("image",this.file)
+      }
       FD.append("userId",localStorage.getItem('userId'));
             const body=Object.fromEntries(FD.entries());
         const postData = JSON.stringify(body);
@@ -82,7 +89,7 @@ export default {
 <style>
 .input-text {
 height: 200px;
-  width: 500px;
+  width: 100%;
 }
 .input-link{
   width: 350px;

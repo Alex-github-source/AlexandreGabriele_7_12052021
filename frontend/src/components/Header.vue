@@ -7,7 +7,7 @@
           <router-link class="nav-link" to="/">Home</router-link>
           <router-link class="nav-link" to="/about">About</router-link>
           <router-link v-if="isLoggedIn" class="nav-link" to="/wall">The Wall</router-link>
-          <router-link class="nav-link" to="/me">Profile</router-link>
+          <router-link v-if="isLoggedIn" class="nav-link" to="/me">Profile</router-link>
 
    
         <div class="d-flex">

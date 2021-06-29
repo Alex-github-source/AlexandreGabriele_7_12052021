@@ -75,6 +75,7 @@ export default {
             self.postId= res.data.id     
         })
         .catch((error)=> { console.log(error) 
+        
         });    
     },
   computed: {

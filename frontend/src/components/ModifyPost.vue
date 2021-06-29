@@ -11,11 +11,11 @@
           <br/>
           <label for="message">Mettez nous votre lien:</label>
           <br />
-          <input v-model="link" class="input-text" id="message" type="text" />
+          <input v-model="link" class="input-link" id="message" type="text" />
           <button type="submit" class="btn btn-primary"  @click.prevent="modifyPost(postId)"  > Poster </button>
 
        </div>
-    </form>
+      </form>
     </div>
   </div>
 </template>
@@ -42,7 +42,6 @@ export default {
         FD.append("link", this.link);
       }
       
-        FD.append("image", this.file);
       
       FD.append("userId",localStorage.getItem('userId'));
               const body=Object.fromEntries(FD.entries());
@@ -52,7 +51,7 @@ export default {
       axios.put("http://localhost:3000/api/posts/"+n,postData,{ headers: {'Content-type' : 'application/json',"Authorization":"Bearer " + localStorage.getItem("token")}})
         .then(response=>{
           console.log(response);
-          window.location.reload();
+         // window.location.reload();
 
         })
 

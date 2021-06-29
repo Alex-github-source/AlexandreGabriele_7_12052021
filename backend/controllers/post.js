@@ -5,7 +5,6 @@ const fs = require("fs");
 exports.createPost =  async (req, res ) => {
     
          const {userId,message}=req.body
-         let imageUrl;
     try {
         
 
@@ -14,7 +13,7 @@ exports.createPost =  async (req, res ) => {
             where: { id: userId }})
         if(user !==null){
             if (req.file) {
-                imageUrl = `${req.protocol}://${req.get("host")}/upload/${
+                 imageUrl = `${req.protocol}://${req.get("host")}/images/${
                   req.file.filename
                 }`;
               } else {
@@ -84,42 +83,19 @@ exports.getPost = async (req,res) =>{
     };
 exports.updatePost = async (req,res) =>{
         try {
-            let newImageUrl;
 
-            const post = await db.Post.findOne({
-                where:{ id:req.params.id },
-                include:[db.User]})
-
-                if(post.id){
-                    if (req.file) {
-                        newImageUrl = `${req.protocol}://${req.get("host")}/upload/${
-                          req.file.filename
-                        }`;
-                        if (post.imageUrl) {
-                          const filename = post.imageUrl.split("/upload")[1];
-                          fs.unlink(`upload/${filename}`, (err) => {
-                            if (err) console.log(err);
-                            else {
-                              console.log(`Deleted file: upload/${filename}`);
-                            }
-                          });
-                        }
-                    if(req.body.message){
-                        post.message=req.body.message
-                    }
-                    if(req.body.link){
-                        post.link=req.body.link
-                    }
-                    if(req.body.imageUrl){
-                    post.imageUrl=newImageUrl;
-                    }
-                    const newPost= await post.save({fields:["message","link","imageUrl"]});
-                    res.status(200).json({
-                        post:newPost,
-                        messageRetour:"Votre post a été mis à jour",
-                    })
-                }
-                }
+            db.Post.findOne({ where: { id: req.params.id } })
+            .then((post) => {
+                post.update({
+                    where: {
+                        postId: req.params.id,
+                    },
+                    message: req.body.message,
+                    link: req.body.link,
+                })
+                    .then(() => res.status(200).json({ message: 'Le message a bien été modifiée !' }))
+                    .catch(error => res.status(400).json({ error: "Une erreur est survenue dans la modification du message" }));
+            });
         } catch (error) {
             console.log(error)
             res.status(500).json(error)
@@ -130,8 +106,8 @@ exports.updatePost = async (req,res) =>{
               const id = req.params.id;
               const post = await db.Post.findOne({ where: { id: id } });
               if (post.imageUrl) {
-                const filename = post.imageUrl.split("/upload")[1];
-                fs.unlink(`upload/${filename}`, () => {
+                const filename = post.imageUrl.split("/images")[1];
+                fs.unlink(`images/${filename}`, () => {
                 db.Post.destroy({ where: { id: id } }); // on supprime le post
                 res.status(200).json({ messageRetour: "Post supprimé" });
             });} else {
