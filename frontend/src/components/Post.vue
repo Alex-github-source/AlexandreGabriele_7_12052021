@@ -49,7 +49,7 @@
             <p class="comment-content">{{ comment.message }}</p>
           </div>
           <div
-            v-if="userId == comment.UserId"
+            v-if="isAdmin === 'true' || userId == comment.UserId"
             class="delete btn btn-danger"
             v-on:click="
               deleteComment(postId, comment.id, user.id, comment.UserId)

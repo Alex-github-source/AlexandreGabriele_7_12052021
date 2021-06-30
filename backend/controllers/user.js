@@ -2,7 +2,6 @@ const bcrypt = require("bcrypt"); // chiffrement du password
 const db = require("../models"); // mdèles de la bdd
 const { Op } = require("sequelize");
 const jwtUtils = require('../utils/jwtutils');
-const token = require("../middleware/token");
 //module pour l'authentificatiion
 
 
