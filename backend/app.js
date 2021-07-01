@@ -39,6 +39,5 @@ dbCon();
 
 
 
-//app.use("/api/comments",    auth, commentRoutes);
 
 module.exports = app

@@ -40,8 +40,7 @@ exports.getAllComments = async (req, res, next) => {
 
     try {
         const comments = await db.Comment.findAll({
-            order: [["createdAt", "DESC"]],
-            limit: 2
+            order: [["createdAt", "DESC"]]
         })
         return res.json(comments)
     } catch (error) {

@@ -120,6 +120,8 @@ export default {
           .then((res) => {
             console.log(res);
             alert("Cliquez sur ok et l'utilisateur sera supprimé");
+            window.location.href = "/";
+            localStorage.clear();
           })
           .catch((error) => {
             console.log(error);

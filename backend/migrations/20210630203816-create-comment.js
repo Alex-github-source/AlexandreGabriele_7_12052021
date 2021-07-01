@@ -1,49 +1,50 @@
 'use strict';
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('Posts', {
+    await queryInterface.createTable('Comments', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-     
-
       message: {
-        allowNull:false,
-        type:  Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false,
       },
-      link: {
-        allowNull:true,
-        type:  Sequelize.STRING
+      pseudo: {
+        type: Sequelize.STRING,
+        allowNull: false,
       },
-      imageUrl: {
-        allowNull: true,
-        type: Sequelize.STRING
-      },
-
-      userId: {
+      PostId: {
         allowNull: false,
         type: Sequelize.INTEGER,
         references: {
-          model: 'Users',
+          model: 'Post',
           key: 'id'
-        },     
+        },
         
       },
-     
+      UserId: {
+        allowNull: false,
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'User',
+          key: 'id'
+        },
+        
+      },
       createdAt: {
         allowNull: false,
-        type:  Sequelize.DATE
+        type: Sequelize.DATE
       },
       updatedAt: {
         allowNull: false,
-        type:  Sequelize.DATE
+        type: Sequelize.DATE
       }
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('Posts');
+    await queryInterface.dropTable('Comments');
   }
 };

@@ -1,7 +1,6 @@
 'use strict';
-
 const {
-  Model, INTEGER
+  Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Post extends Model {
@@ -14,17 +13,22 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       models.Post.belongsTo(models.User, {
         foreignKey: {
-          allowNull: false
-        }, onDelete:'CASCADE', 
-      }),
-        models.Post.hasMany(models.Comment )
-    }
-    };
-  Post.init({
-    message:  { type: DataTypes.STRING, allowNull: false },
-    link:  { type: DataTypes.STRING, allowNull: true },
-    imageUrl: { type: DataTypes.STRING, allowNull: true },
+          name: 'UserId'
+        },
+        onDelete: 'CASCADE',
+      });
+      models.Post.hasMany(models.Comment, {
+        foreignKey: {
+          name: 'PostId'
+        },
+        onDelete: 'CASCADE',
 
+      });
+    }
+  };
+  Post.init({
+    message: DataTypes.STRING,
+    imageUrl: DataTypes.STRING,
   }, {
     sequelize,
     modelName: 'Post',
